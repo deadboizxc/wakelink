@@ -1,0 +1,49 @@
+The NGC License — Commercial Use Permission Request
+
+To: Neon Genesis Coders (NGC) <contact@example.com>
+
+Subject: Request for Permission to Use WakeLink in a Commercial Product
+
+Dear NGC Maintainers,
+
+I hereby request permission to use, modify, and distribute the WakeLink project (licensed under The NGC License, Version 1.0) for commercial purposes. Please find the requested details below; replace the placeholders with concrete information and attach any supporting documents.
+
+Project / Repository:
+  - name: WakeLink
+  - url: <replace-with-repo-url>
+
+Requester:
+  - full name: <your-full-name>
+  - organization / company: <company-or-legal-entity>
+  - contact email: <email@example.com>
+  - contact phone (optional): <phone-number>
+
+Intended Commercial Use:
+  - short description: <brief summary of how WakeLink will be used in your product>
+  - distribution plan: <how you will distribute the product (e.g., product sold to customers, offered as service)> 
+  - expected modifications: <high-level list of code or protocol changes you plan to make>
+
+Legal / Compliance:
+  - will you relicense the project or distribute under a different license? <yes/no>
+  - will you provide attribution and retain copyright notices? <yes/no>
+  - if requested, attach a company registration or other proof of business status.
+
+Requested Terms:
+  - proposed commercial license type or terms: <proposed-terms>
+  - any initial offer of compensation or fees: <offer-if-applicable>
+
+Additional Notes:
+  - desired timeline for approval: <dates>
+  - technical contact for integration/questions: <name and email>
+
+Please reply to this request with the terms under which NGC would permit commercial use, including any fees, required notices, or attribution text. If you require additional information, do not hesitate to contact me at the address above.
+
+Sincerely,
+
+<your-full-name>
+<position>
+<company-or-legal-entity>
+<contact email>
+
+--
+This is a template request. Replace all angle-bracketed placeholders with real values before sending.
