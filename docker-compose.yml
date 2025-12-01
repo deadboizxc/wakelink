@@ -1,0 +1,26 @@
+services:
+  wakelink-server:
+    build: .
+    container_name: wakelink-server
+    ports:
+      - "9009:9009"
+    environment:
+      - CLOUD_PORT=9009
+      - DATABASE_FILE=/app/data/wakelink_cloud.db
+      - API_ENV=production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9009/docs || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    volumes:
+      - ./services/server/logs:/app/logs
+      - ./services/server/data:/app/data
+    networks:
+      - wakelink-network
+
+networks:
+  wakelink-network:
+    driver: bridge
