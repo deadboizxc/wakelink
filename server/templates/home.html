@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}WakeLink Cloud Relay{% endblock %}
+
+{% block content %}
+<div class="box">
+    <h1>🌐 WakeLink Cloud Relay</h1>
+    <p><strong>Mode:</strong> Secure API with Bearer Tokens</p>
+    <p><strong>Port:</strong> 9009</p>
+    <p><strong>Database:</strong> {{ database_file }}</p>
+    <p><strong>URL:</strong> {{ base_url }}</p>
+    
+    <div class="token-info">
+        <strong>🔐 Secure Authentication:</strong> All API requests require Bearer token in Authorization header
+    </div>
+    
+    <div class="plan">
+        <h3>🚀 Free Base Plan</h3>
+        <p><strong>5 devices</strong> included</p>
+        <p>Upgrade available for more devices</p>
+    </div>
+    
+    <div class="nav">
+        <a href="/login">🔑 Login</a>
+        <a href="/register">📝 Register</a>
+    </div>
+    
+    <h3>API Endpoints:</h3>
+    <div class="endpoints">
+        <h4>For Devices (use device_token in request body):</h4>
+        <ul>
+            <li><strong>POST /api/push</strong> - sending messages</li>
+            <li><strong>POST /api/pull</strong> - receiving commands</li>
+        </ul>
+        
+        <h4>For Clients (use Bearer token in Authorization header):</h4>
+        <ul>
+            <li><strong>POST /api/register_device</strong> - device registration</li>
+            <li><strong>GET /api/devices</strong> - device list</li>
+            <li><strong>POST /api/delete_device</strong> - device deletion</li>
+        </ul>
+        
+        <h4>Example with Bearer Token:</h4>
+        <pre style="background: #f8f9fa; padding: 10px; border-radius: 4px; font-size: 12px;">
+curl -X GET "{{ base_url }}/api/devices" \
+  -H "Authorization: Bearer your_api_token_here"</pre>
+    </div>
+</div>
+{% endblock %}

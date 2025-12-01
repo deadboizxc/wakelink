@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - WakeLink{% endblock %}
+
+{% block content %}
+<h1>🚀 WakeLink Dashboard</h1>
+<h2>Welcome, {{ user.username }}!</h2>
+
+<div class="nav">
+    <a href="/">🏠 Home</a>
+    <a href="/logout">🚪 Logout</a>
+</div>
+
+<div class="section">
+    <h3>📊 Account Information</h3>
+    <div class="plan-info">
+        <h4>📋 Your Plan: {{ user.plan }}</h4>
+        <p><strong>Devices:</strong> {{ user.devices_count }} / {{ user.devices_limit }}</p>
+        <p><strong>Online Devices:</strong> {{ online_count }}</p>
+    </div>
+    
+    <div class="api-section">
+        <h4>🔑 Your API Token 
+            <button class="copy-btn" onclick="copyToClipboard('{{ api_token }}')">Copy</button>
+        </h4>
+        <p>Use this token to access the WakeLink API:</p>
+        <div class="token" id="api-token">{{ api_token }}</div>
+        <p><small><em>Keep this token secure! It provides full access to your account.</em></small></p>
+    </div>
+</div>
+
+<div class="section">
+    <h3>📱 Your Devices</h3>
+    {% if not user.devices %}
+        <p>No devices registered yet. Use the API to add your first device!</p>
+    {% else %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Device ID</th>
+                    <th>Status</th>
+                    <th>Last Seen</th>
+                    <th>Poll Count</th>
+                    <th>Registered</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for device in user.devices %}
+                <tr>
+                    <td>{{ device.device_id }}</td>
+                    <td>
+                        {% if device.online %}
+                            <span class="status-online">🟢 Online</span>
+                        {% else %}
+                            <span class="status-offline">🔴 Offline</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ device.last_seen.strftime('%Y-%m-%d %H:%M:%S') if device.last_seen else 'Never' }}</td>
+                    <td>{{ device.poll_count }}</td>
+                    <td>{{ device.added.strftime('%Y-%m-%d %H:%M:%S') if device.added else 'N/A' }}</td>
+                    <td>
+                        <button class="delete-btn" onclick="deleteDevice('{{ device.device_id }}')">Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+
+<div class="section">
+    <h3>🔧 API Reference</h3>
+    <div class="api-section">
+        <h4>Register a new device:</h4>
+        <div class="token" id="register-cmd">
+curl -X POST "{{ base_url }}/api/register_device" \<br>
+  -H "Content-Type: application/json" \<br>
+  -H "Authorization: Bearer {{ api_token }}" \<br>
+  -d '{"device_id": "my_esp32", "device_data": {"model": "ESP32", "version": "1.0"}}'
+        </div>
+        <button class="copy-btn" onclick="copyToClipboard('register-cmd')">Copy Command</button>
+
+        <h4>Send message to device:</h4>
+        <div class="token" id="push-cmd">
+curl -X POST "{{ base_url }}/api/push" \<br>
+  -H "Content-Type: application/json" \<br>
+  -H "Authorization: Bearer {{ api_token }}" \<br>
+  -d '{<br>
+    "device_id": "DEVICE_ID_HERE",<br>
+    "payload": "your_encrypted_data_here",<br>
+    "signature": "hmac_signature_here",<br>
+    "version": "1.0"<br>
+  }'
+        </div>
+        <button class="copy-btn" onclick="copyToClipboard('push-cmd')">Copy Command</button>
+
+        <h4>Get messages from device (device polling):</h4>
+<div class="token" id="pull-cmd">
+curl -X POST "{{ base_url }}/api/pull" \<br>
+  -H "Content-Type: application/json" \<br>
+  -H "Authorization: Bearer {{ api_token }}" \<br>
+  -d '{<br>
+    "device_id": "DEVICE_ID_HERE"<br>
+  }'
+</div>
+<button class="copy-btn" onclick="copyToClipboard('pull-cmd')">Copy Command</button>
+
+        <h4>Get your devices list:</h4>
+        <div class="token" id="devices-cmd">
+curl -X GET "{{ base_url }}/api/devices" \<br>
+  -H "Authorization: Bearer {{ api_token }}"
+        </div>
+        <button class="copy-btn" onclick="copyToClipboard('devices-cmd')">Copy Command</button>
+
+        <h4>Delete device:</h4>
+        <div class="token" id="delete-cmd">
+curl -X POST "{{ base_url }}/api/delete_device" \<br>
+  -H "Content-Type: application/json" \<br>
+  -H "Authorization: Bearer {{ api_token }}" \<br>
+  -d '{"device_id": "DEVICE_ID_HERE"}'
+        </div>
+        <button class="copy-btn" onclick="copyToClipboard('delete-cmd')">Copy Command</button>
+    </div>
+</div>
+
+<div class="section">
+    <h3>📊 System Status</h3>
+    <div class="stats">
+        <p><strong>Server Time:</strong> {{ server_time }}</p>
+        <p><strong>Online Devices:</strong> {{ system_stats.online_devices }} ({{ system_stats.wss_connections }} via WSS)</p>
+        <p><strong>Total Devices:</strong> {{ system_stats.total_devices }}</p>
+        <p><strong>Total Users:</strong> {{ system_stats.total_users }}</p>
+        <p><strong>Queues to Devices:</strong> {{ system_stats.queues_to_device }}</p>
+        <p><strong>Queues to Clients:</strong> {{ system_stats.queues_to_client }}</p>
+    </div>
+</div>
+
+<script>
+    function copyToClipboard(elementId) {
+        let text;
+        if (typeof elementId === 'string') {
+            const element = document.getElementById(elementId);
+            if (element) {
+                text = element.textContent || element.innerText;
+            } else {
+                text = elementId;
+            }
+        } else {
+            text = elementId;
+        }
+        
+        text = text.replace(/<br\s*\/?>/gi, '\n');
+        
+        navigator.clipboard.writeText(text).then(function() {
+            alert('Copied to clipboard!');
+        }, function(err) {
+            console.error('Could not copy text: ', err);
+        });
+    }
+
+    async function deleteDevice(deviceId) {
+        if (!confirm(`Are you sure you want to delete device "${deviceId}"?`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/dashboard/delete_device', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ device_id: deviceId }),
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                alert('Device deleted successfully!');
+                location.reload();
+            } else {
+                const error = await response.json();
+                alert('Error deleting device: ' + (error.detail || 'Unknown error'));
+            }
+        } catch (error) {
+            alert('Error deleting device: ' + error.message);
+        }
+    }
+
+    // Auto-refresh page every 30 seconds to update device status
+    setTimeout(() => {
+        location.reload();
+    }, 30000);
+</script>
+{% endblock %}
