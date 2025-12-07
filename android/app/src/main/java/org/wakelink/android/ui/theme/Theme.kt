@@ -13,13 +13,20 @@ import androidx.core.view.WindowCompat
 private val DarkColorScheme = darkColorScheme(
     primary = WakeLinkPrimary,
     secondary = WakeLinkSecondary,
+    tertiary = WakeLinkTertiary,
     background = WakeLinkBackground,
     surface = WakeLinkSurface,
+    surfaceVariant = WakeLinkCard,
     onPrimary = WakeLinkText,
     onSecondary = WakeLinkText,
+    onTertiary = WakeLinkText,
     onBackground = WakeLinkText,
     onSurface = WakeLinkText,
-    surfaceVariant = WakeLinkCard
+    onSurfaceVariant = WakeLinkTextSecondary,
+    outline = WakeLinkBorder,
+    outlineVariant = WakeLinkBorderHover,
+    error = WakeLinkError,
+    onError = WakeLinkText
 )
 
 @Composable

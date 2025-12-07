@@ -1,6 +1,7 @@
 package org.wakelink.android.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,6 +16,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -24,6 +27,11 @@ import org.wakelink.android.ui.theme.*
 import org.wakelink.android.ui.viewmodel.CommandResultState
 import org.wakelink.android.ui.viewmodel.DeviceCommand
 import org.wakelink.android.ui.viewmodel.MainViewModel
+
+// Gradient brush matching server UI
+val AccentGradient = Brush.linearGradient(
+    colors = listOf(WakeLinkPrimary, WakeLinkSecondary, WakeLinkTertiary)
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,21 +52,34 @@ fun HomeScreen(
         topBar = {
             TopAppBar(
                 title = { 
-                    Text(
-                        "WakeLink",
-                        fontWeight = FontWeight.Bold
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            "Wake",
+                            fontWeight = FontWeight.ExtraBold,
+                            color = WakeLinkText
+                        )
+                        Text(
+                            "Link",
+                            fontWeight = FontWeight.ExtraBold,
+                            color = WakeLinkPrimary
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = WakeLinkBackground,
                     titleContentColor = WakeLinkText
                 ),
                 actions = {
-                    IconButton(onClick = onNavigateToAddDevice) {
+                    FilledIconButton(
+                        onClick = onNavigateToAddDevice,
+                        colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = WakeLinkPrimary.copy(alpha = 0.2f),
+                            contentColor = WakeLinkPrimary
+                        )
+                    ) {
                         Icon(
                             Icons.Default.Add,
-                            contentDescription = "Add Device",
-                            tint = WakeLinkPrimary
+                            contentDescription = "Add Device"
                         )
                     }
                 }
@@ -180,10 +201,23 @@ fun QuickActionsRow(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(16.dp)
+            .border(
+                width = 1.dp,
+                color = WakeLinkBorder,
+                shape = RoundedCornerShape(16.dp)
+            ),
         colors = CardDefaults.cardColors(containerColor = WakeLinkCard),
         shape = RoundedCornerShape(16.dp)
     ) {
+        // Top accent line
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(2.dp)
+                .background(AccentGradient)
+        )
+        
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -484,7 +518,12 @@ fun CommandButton(
     Card(
         modifier = modifier
             .aspectRatio(1.2f)
-            .clickable(enabled = enabled, onClick = onClick),
+            .clickable(enabled = enabled, onClick = onClick)
+            .border(
+                width = 1.dp,
+                color = if (enabled) WakeLinkBorder else Color.Transparent,
+                shape = RoundedCornerShape(12.dp)
+            ),
         colors = CardDefaults.cardColors(
             containerColor = if (enabled) WakeLinkCard else WakeLinkCard.copy(alpha = 0.5f)
         ),
@@ -497,12 +536,22 @@ fun CommandButton(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Icon(
-                icon,
-                contentDescription = label,
-                tint = if (enabled) WakeLinkPrimary else WakeLinkTextSecondary,
-                modifier = Modifier.size(28.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .size(44.dp)
+                    .background(
+                        if (enabled) WakeLinkPrimary.copy(alpha = 0.15f) else WakeLinkCard,
+                        RoundedCornerShape(10.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    icon,
+                    contentDescription = label,
+                    tint = if (enabled) WakeLinkPrimary else WakeLinkTextSecondary,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 label,
@@ -522,31 +571,46 @@ fun EmptyState(onAddDevice: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Icon(
-            Icons.Default.DevicesOther,
-            contentDescription = null,
-            modifier = Modifier.size(80.dp),
-            tint = WakeLinkTextSecondary
-        )
-        Spacer(modifier = Modifier.height(16.dp))
+        Box(
+            modifier = Modifier
+                .size(100.dp)
+                .background(
+                    WakeLinkPrimary.copy(alpha = 0.1f),
+                    CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                Icons.Default.DevicesOther,
+                contentDescription = null,
+                modifier = Modifier.size(56.dp),
+                tint = WakeLinkPrimary
+            )
+        }
+        Spacer(modifier = Modifier.height(24.dp))
         Text(
-            "No devices configured",
+            "No devices yet",
             style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
             color = WakeLinkText
         )
         Text(
-            "Add your first WakeLink device",
+            "Add your first WakeLink device to get started",
             style = MaterialTheme.typography.bodyMedium,
             color = WakeLinkTextSecondary
         )
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
         Button(
             onClick = onAddDevice,
-            colors = ButtonDefaults.buttonColors(containerColor = WakeLinkPrimary)
+            colors = ButtonDefaults.buttonColors(
+                containerColor = WakeLinkPrimary
+            ),
+            shape = RoundedCornerShape(12.dp),
+            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 14.dp)
         ) {
             Icon(Icons.Default.Add, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Add Device")
+            Text("Add Device", fontWeight = FontWeight.SemiBold)
         }
     }
 }

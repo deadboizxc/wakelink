@@ -45,18 +45,4 @@ extern bool webServerEnabled;
  */
 void initWebServer();
 
-/**
- * @brief Get current WiFi mode as human-readable string.
- * 
- * @return "Access Point" or "Station" based on current mode.
- */
-String getWiFiStatus();
-
-/**
- * @brief Get encryption status as human-readable string.
- * 
- * @return "Enabled" if crypto is configured, "Disabled" otherwise.
- */
-String getEncryptionStatus();
-
 #endif // WEB_SERVER_H
