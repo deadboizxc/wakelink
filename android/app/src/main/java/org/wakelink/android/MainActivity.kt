@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -105,6 +106,12 @@ fun DeviceDetailScreen(
     val device = devices.find { it.name == deviceName }
     
     if (device == null) {
+        // Show dark background while navigating back
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(org.wakelink.android.ui.theme.WakeLinkBackground)
+        )
         LaunchedEffect(Unit) {
             onNavigateBack()
         }
