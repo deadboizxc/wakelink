@@ -1,4 +1,5 @@
 services/*
+.gradle/*
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -175,3 +176,4 @@ cython_debug/
 
 # Logs and temporary files
 unknown_errors.txt
+android/.gradle/

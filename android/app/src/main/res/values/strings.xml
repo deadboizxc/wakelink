@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WakeLink</string>
+    <string name="title_devices">Devices</string>
+    <string name="title_add_device">Add Device</string>
+    <string name="title_device_detail">Device Detail</string>
+    
+    <!-- Actions -->
+    <string name="action_add">Add</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_save">Save</string>
+    <string name="action_ping">Ping</string>
+    <string name="action_info">Info</string>
+    <string name="action_wake">Wake</string>
+    <string name="action_restart">Restart</string>
+    <string name="action_cloud_on">Cloud On</string>
+    <string name="action_cloud_off">Cloud Off</string>
+    <string name="action_cloud_status">Cloud Status</string>
+    
+    <!-- Form labels -->
+    <string name="label_device_name">Device Name</string>
+    <string name="label_device_token">Device Token</string>
+    <string name="label_device_id">Device ID</string>
+    <string name="label_ip_address">IP Address</string>
+    <string name="label_port">Port</string>
+    <string name="label_cloud_url">Cloud URL</string>
+    <string name="label_api_token">API Token</string>
+    <string name="label_mac_address">MAC Address</string>
+    
+    <!-- Placeholders -->
+    <string name="placeholder_device_name">my-device</string>
+    <string name="placeholder_token">32+ character token</string>
+    <string name="placeholder_device_id">WL12345678</string>
+    <string name="placeholder_ip">192.168.1.100</string>
+    <string name="placeholder_port">99</string>
+    <string name="placeholder_cloud_url">https://wakelink.example.com</string>
+    <string name="placeholder_mac">AA:BB:CC:DD:EE:FF</string>
+    
+    <!-- Messages -->
+    <string name="msg_no_devices">No devices configured</string>
+    <string name="msg_add_device_hint">Tap + to add a device</string>
+    <string name="msg_loading">Loading…</string>
+    <string name="msg_success">Success</string>
+    <string name="msg_error">Error</string>
+    <string name="msg_delete_confirm">Are you sure you want to delete this device?</string>
+    
+    <!-- Errors -->
+    <string name="error_name_required">Name is required</string>
+    <string name="error_token_required">Token is required</string>
+    <string name="error_token_too_short">Token must be at least 32 characters</string>
+    <string name="error_connection_failed">Connection failed</string>
+    
+    <!-- Transport modes -->
+    <string name="mode_tcp">TCP</string>
+    <string name="mode_cloud">Cloud</string>
+    <string name="mode_wss">WSS</string>
+</resources>
