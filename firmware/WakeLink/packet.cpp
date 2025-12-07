@@ -45,7 +45,7 @@ String PacketManager::createCommandPacket(const String& command, const JsonObjec
 /**
  * @brief Create outer JSON packet.
  *
- * Forms JSON with device_id, payload, signature, and version fields.
+ * Forms JSON with device_id, payload, signature, counter, and version fields.
  * Signature is computed via crypto.calculateHMAC for payload.
  *
  * @param encryptedPayload Hex-encoded encrypted payload.
@@ -56,6 +56,7 @@ String PacketManager::createOuterPacket(const String& encryptedPayload) {
     doc["device_id"] = DEVICE_ID;
     doc["payload"] = encryptedPayload;
     doc["signature"] = crypto.calculateHMAC(encryptedPayload);
+    doc["counter"] = crypto.getRequestCount();
     doc["version"] = "1.0";
 
     String out;

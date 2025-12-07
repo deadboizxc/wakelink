@@ -7,10 +7,11 @@
  * (TCP, HTTP, WSS).
  * 
  * Packet Structure:
- * - Outer JSON: {device_id, payload, signature, version}
+ * - Outer JSON: {device_id, payload, signature, counter, version}
  * - Payload: hex string = [uint16_be length] + [ciphertext] + [16B nonce]
  * - Signature: HMAC-SHA256 of payload hex string only
  * - Inner JSON: {command, data, request_id, timestamp}
+ * - Counter: Current request counter from ESP (for client sync)
  * 
  * Security:
  * - Encryption: ChaCha20 with key derived from device_token
