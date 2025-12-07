@@ -233,6 +233,7 @@ async def websocket_device_endpoint(
                     "device_id": target_device_id,
                     "payload": message_data.get("payload"),
                     "signature": message_data.get("signature"),
+                    "counter": message_data.get("counter"),
                     "version": "1.0"
                 }
                 
@@ -294,6 +295,7 @@ async def websocket_device_endpoint(
                 "device_id": target_device_id,
                 "payload": message_data.get("payload"),
                 "signature": message_data.get("signature"),
+                "counter": message_data.get("counter"),
                 "version": "1.0"
             }
             

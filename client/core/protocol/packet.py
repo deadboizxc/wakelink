@@ -82,7 +82,7 @@ class PacketManager:
             packet_json: JSON string of outer packet.
             
         Returns:
-            Dict with status and decrypted data, or error info.
+            Dict with status, decrypted data, and counter from ESP.
         """
         try:
             # Parse outer packet
@@ -115,8 +115,13 @@ class PacketManager:
         except json.JSONDecodeError as e:
             return {"status": "error", "error": f"INNER_JSON_ERROR: {e}"}
         
-        # Build successful response
+        # Build successful response with counter from outer packet
         result = {"status": "success"}
+        
+        # Add counter from outer packet (synced from ESP)
+        if "counter" in outer:
+            result["counter"] = outer["counter"]
+        
         result.update(inner)
         
         return result
