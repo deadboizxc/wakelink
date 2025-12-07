@@ -231,3 +231,74 @@ private data class MessageDto(
     val signature: String = "",
     val counter: Int? = null
 )
+
+@Serializable
+private data class RegisterDeviceRequest(
+    @SerialName("device_id") val deviceId: String,
+    @SerialName("device_data") val deviceData: DeviceData
+)
+
+@Serializable
+private data class DeviceData(
+    val name: String,
+    @SerialName("device_token") val deviceToken: String
+)
+
+@Serializable
+data class RegisterResponse(
+    val status: String = "",
+    val message: String? = null,
+    val error: String? = null
+)
+
+/**
+ * Standalone function to register device on cloud server.
+ * This is separate because we need to call it before device object exists.
+ */
+suspend fun registerDeviceOnCloud(
+    cloudUrl: String,
+    apiToken: String,
+    deviceId: String,
+    deviceName: String,
+    deviceToken: String
+): RegisterResponse = withContext(Dispatchers.IO) {
+    val json = Json { ignoreUnknownKeys = true }
+    val client = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .build()
+    
+    try {
+        val requestBody = RegisterDeviceRequest(
+            deviceId = deviceId,
+            deviceData = DeviceData(
+                name = deviceName,
+                deviceToken = deviceToken
+            )
+        )
+        
+        val request = Request.Builder()
+            .url("$cloudUrl/api/register_device")
+            .addHeader("Authorization", "Bearer $apiToken")
+            .addHeader("Content-Type", "application/json")
+            .post(json.encodeToString(requestBody).toRequestBody("application/json".toMediaType()))
+            .build()
+        
+        val response = client.newCall(request).execute()
+        val responseBody = response.body?.string() ?: ""
+        
+        if (!response.isSuccessful) {
+            return@withContext RegisterResponse(
+                status = "error",
+                error = "HTTP ${response.code}: $responseBody"
+            )
+        }
+        
+        json.decodeFromString<RegisterResponse>(responseBody)
+    } catch (e: Exception) {
+        RegisterResponse(
+            status = "error",
+            error = e.message ?: "Registration failed"
+        )
+    }
+}

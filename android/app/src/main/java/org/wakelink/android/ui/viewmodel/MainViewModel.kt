@@ -12,6 +12,7 @@ import org.wakelink.android.data.Device
 import org.wakelink.android.data.DeviceRepository
 import org.wakelink.android.data.TransportMode
 import org.wakelink.android.network.WakeLinkClient
+import org.wakelink.android.network.registerDeviceOnCloud
 
 /**
  * Main ViewModel for device management and command execution.
@@ -67,9 +68,28 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         port: Int,
         cloudUrl: String?,
         apiToken: String?,
-        mode: TransportMode
+        mode: TransportMode,
+        registerOnCloud: Boolean = false,
+        onResult: ((Boolean, String?) -> Unit)? = null
     ) {
         viewModelScope.launch {
+            // If cloud mode and registerOnCloud is true, register first
+            if (registerOnCloud && mode != TransportMode.TCP && !apiToken.isNullOrBlank()) {
+                val url = cloudUrl?.takeIf { it.isNotBlank() } ?: "https://wakelink.deadboizxc.org"
+                val result = registerDeviceOnCloud(
+                    cloudUrl = url,
+                    apiToken = apiToken,
+                    deviceId = deviceId,
+                    deviceName = name,
+                    deviceToken = token
+                )
+                
+                if (result.status != "device_registered") {
+                    onResult?.invoke(false, result.error ?: result.message ?: "Registration failed")
+                    return@launch
+                }
+            }
+            
             val device = Device(
                 name = name,
                 token = token,
@@ -81,6 +101,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 mode = mode
             )
             repository.saveDevice(device)
+            onResult?.invoke(true, null)
         }
     }
     

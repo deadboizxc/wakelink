@@ -31,9 +31,12 @@ fun AddDeviceScreen(
     var cloudUrl by remember { mutableStateOf("") }
     var apiToken by remember { mutableStateOf("") }
     var mode by remember { mutableStateOf(TransportMode.TCP) }
+    var registerOnCloud by remember { mutableStateOf(false) }
     
     var nameError by remember { mutableStateOf<String?>(null) }
     var tokenError by remember { mutableStateOf<String?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
     
     fun validate(): Boolean {
         nameError = if (name.isBlank()) "Name is required" else null
@@ -200,14 +203,55 @@ fun AddDeviceScreen(
                     modifier = Modifier.fillMaxWidth(),
                     colors = textFieldColors()
                 )
+                
+                // Register on cloud checkbox
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = registerOnCloud,
+                        onCheckedChange = { registerOnCloud = it },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = WakeLinkPrimary,
+                            uncheckedColor = WakeLinkTextSecondary
+                        )
+                    )
+                    Text(
+                        "Register device on cloud server",
+                        color = WakeLinkText,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
             }
             
             Spacer(modifier = Modifier.height(16.dp))
+            
+            // Error message
+            errorMessage?.let { error ->
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = StatusError.copy(alpha = 0.1f)),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        text = error,
+                        color = StatusError,
+                        modifier = Modifier.padding(12.dp),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
             
             // Save button
             Button(
                 onClick = {
                     if (validate()) {
+                        isLoading = true
+                        errorMessage = null
                         viewModel.addDevice(
                             name = name,
                             token = token,
@@ -216,22 +260,38 @@ fun AddDeviceScreen(
                             port = port.toIntOrNull() ?: 99,
                             cloudUrl = cloudUrl.ifBlank { null },
                             apiToken = apiToken.ifBlank { null },
-                            mode = mode
-                        )
-                        onNavigateBack()
+                            mode = mode,
+                            registerOnCloud = registerOnCloud
+                        ) { success, error ->
+                            isLoading = false
+                            if (success) {
+                                onNavigateBack()
+                            } else {
+                                errorMessage = error ?: "Failed to add device"
+                            }
+                        }
                     }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = WakeLinkPrimary),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                enabled = !isLoading
             ) {
-                Text(
-                    "Add Device",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = WakeLinkText,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text(
+                        if (registerOnCloud && mode != TransportMode.TCP) "Register & Add Device" else "Add Device",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
     }
