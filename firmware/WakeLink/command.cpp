@@ -73,8 +73,8 @@ void CommandManager::cmd_info(JsonDocument& doc, JsonObject data) {
     doc["requests"] = crypto.getRequestCount();
     doc["crypto_enabled"] = crypto.isEnabled();
     doc["mode"] = (WiFi.getMode() == WIFI_AP ? "AP" : "STA");
-    doc["web_enabled"] = webServerEnabled;
-    doc["cloud_enabled"] = cfg.cloud_enabled;
+    doc["web_enabled"] = (bool)webServerEnabled;
+    doc["cloud_enabled"] = (cfg.cloud_enabled == 1);
     doc["cloud_status"] = getCloudStatus();
     doc["free_heap"] = ESP.getFreeHeap();
 }
@@ -148,7 +148,7 @@ void CommandManager::cmd_web_control(JsonDocument& doc, JsonObject data) {
 
     if (strcmp(action, "status") == 0) {
         doc["status"] = "success";
-        doc["web_enabled"] = webServerEnabled;
+        doc["web_enabled"] = (bool)webServerEnabled;
 
     } else if (strcmp(action, "enable") == 0) {
         webServerEnabled = true;
