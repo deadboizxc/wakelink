@@ -26,6 +26,7 @@ class Device(Base):
     added = Column(DateTime(timezone=True))
     last_seen = Column(DateTime(timezone=True))
     poll_count = Column(Integer, default=0)
+    last_counter = Column(Integer, default=0)
 
 class Message(Base):
     __tablename__ = "messages"

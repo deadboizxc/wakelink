@@ -227,6 +227,8 @@ async def websocket_device_endpoint(
                 device = db.query(Device).filter(Device.device_id == target_device_id).first()
                 if device:
                     device.last_seen = datetime.now().astimezone()
+                    if message_data.get("counter") is not None:
+                        device.last_counter = message_data.get("counter")
                     db.commit()
                 
                 outer_packet = {
@@ -282,11 +284,13 @@ async def websocket_device_endpoint(
                 })
                 continue
             
-            # Update device last_seen
+            # Update device last_seen and counter
             target_device_id = message_data.get("device_id")
             device = db.query(Device).filter(Device.device_id == target_device_id).first()
             if device:
                 device.last_seen = datetime.now().astimezone()
+                if message_data.get("counter") is not None:
+                    device.last_counter = message_data.get("counter")
                 db.commit()
             
             # This is a RESPONSE from device (since device is sending it)

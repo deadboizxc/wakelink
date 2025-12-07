@@ -62,6 +62,7 @@
                     <tr>
                         <th>Device ID</th>
                         <th>Status</th>
+                        <th>Counter</th>
                         <th>Last Seen</th>
                         <th>Poll Count</th>
                         <th>Registered</th>
@@ -79,6 +80,7 @@
                                 <span class="status status-offline"><span class="status-dot"></span> Offline</span>
                             {% endif %}
                         </td>
+                        <td><code>{{ device.last_counter or 0 }}</code></td>
                         <td>{{ device.last_seen.strftime('%Y-%m-%d %H:%M') if device.last_seen else '—' }}</td>
                         <td>{{ device.poll_count }}</td>
                         <td>{{ device.added.strftime('%Y-%m-%d') if device.added else '—' }}</td>
