@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -20,6 +21,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import org.wakelink.android.ui.screens.AddDeviceScreen
+import org.wakelink.android.ui.screens.EditDeviceScreen
 import org.wakelink.android.ui.screens.HomeScreen
 import org.wakelink.android.ui.theme.WakeLinkTheme
 import org.wakelink.android.ui.theme.WakeLinkError
@@ -45,6 +47,9 @@ class MainActivity : ComponentActivity() {
 sealed class Screen(val route: String) {
     object Home : Screen("home")
     object AddDevice : Screen("add_device")
+    object EditDevice : Screen("edit/{deviceName}") {
+        fun createRoute(deviceName: String) = "edit/$deviceName"
+    }
     object DeviceDetail : Screen("device/{deviceName}") {
         fun createRoute(deviceName: String) = "device/$deviceName"
     }
@@ -89,6 +94,23 @@ fun WakeLinkApp(viewModel: MainViewModel) {
                 deviceName = deviceName,
                 onNavigateBack = {
                     navController.popBackStack()
+                },
+                onNavigateToEdit = {
+                    navController.navigate(Screen.EditDevice.createRoute(deviceName))
+                }
+            )
+        }
+        
+        composable(
+            route = Screen.EditDevice.route,
+            arguments = listOf(navArgument("deviceName") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val deviceName = backStackEntry.arguments?.getString("deviceName") ?: ""
+            EditDeviceScreen(
+                viewModel = viewModel,
+                deviceName = deviceName,
+                onNavigateBack = {
+                    navController.popBackStack()
                 }
             )
         }
@@ -100,7 +122,8 @@ fun WakeLinkApp(viewModel: MainViewModel) {
 fun DeviceDetailScreen(
     viewModel: MainViewModel,
     deviceName: String,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToEdit: () -> Unit = {}
 ) {
     val devices by viewModel.devices.collectAsState()
     val device = devices.find { it.name == deviceName }
@@ -193,6 +216,9 @@ fun DeviceDetailScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = onNavigateToEdit) {
+                        Icon(Icons.Default.Edit, contentDescription = "Edit")
+                    }
                     IconButton(onClick = { showDeleteDialog = true }) {
                         Icon(Icons.Default.Delete, contentDescription = "Delete")
                     }

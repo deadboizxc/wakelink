@@ -72,6 +72,7 @@ void setup() {
     #endif
     );
     Serial.println(F("=== START ==="));
+    performFullReset();
 
     // Initialize hardware pins
     pinMode(STATUS_LED, OUTPUT);
