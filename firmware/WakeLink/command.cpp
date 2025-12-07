@@ -70,7 +70,7 @@ void CommandManager::cmd_info(JsonDocument& doc, JsonObject data) {
     doc["ip"] = WiFi.localIP().toString();
     doc["ssid"] = WiFi.SSID();
     doc["rssi"] = WiFi.RSSI();
-    doc["requests"] = crypto.getRequestCount();
+    doc["request_counter"] = crypto.getRequestCount();
     doc["crypto_enabled"] = crypto.isEnabled();
     doc["mode"] = (WiFi.getMode() == WIFI_AP ? "AP" : "STA");
     doc["web_enabled"] = (bool)webServerEnabled;
@@ -227,8 +227,8 @@ void CommandManager::cmd_cloud_control(JsonDocument& doc, JsonObject data) {
 void CommandManager::cmd_crypto_info(JsonDocument& doc, JsonObject data) {
     doc["status"] = "success";
     doc["enabled"] = crypto.isEnabled();
-    doc["requests"] = crypto.getRequestCount();
-    doc["limit"] = crypto.getRequestLimit();
+    doc["request_counter"] = crypto.getRequestCount();
+    doc["request_limit"] = crypto.getRequestLimit();
     doc["key_info"] = crypto.getKeyInfo();
 }
 
@@ -242,8 +242,8 @@ void CommandManager::cmd_crypto_info(JsonDocument& doc, JsonObject data) {
  */
 void CommandManager::cmd_counter_info(JsonDocument& doc, JsonObject data) {
     doc["status"] = "success";
-    doc["requests"] = crypto.getRequestCount();
-    doc["limit"] = crypto.getRequestLimit();
+    doc["request_counter"] = crypto.getRequestCount();
+    doc["request_limit"] = crypto.getRequestLimit();
 }
 
 /**

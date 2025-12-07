@@ -227,15 +227,15 @@ async def websocket_device_endpoint(
                 device = db.query(Device).filter(Device.device_id == target_device_id).first()
                 if device:
                     device.last_seen = datetime.now().astimezone()
-                    if message_data.get("counter") is not None:
-                        device.last_counter = message_data.get("counter")
+                    if message_data.get("request_counter") is not None:
+                        device.last_request_counter = message_data.get("request_counter")
                     db.commit()
                 
                 outer_packet = {
                     "device_id": target_device_id,
                     "payload": message_data.get("payload"),
                     "signature": message_data.get("signature"),
-                    "counter": message_data.get("counter"),
+                    "request_counter": message_data.get("request_counter"),
                     "version": "1.0"
                 }
                 
@@ -284,13 +284,13 @@ async def websocket_device_endpoint(
                 })
                 continue
             
-            # Update device last_seen and counter
+            # Update device last_seen and request_counter
             target_device_id = message_data.get("device_id")
             device = db.query(Device).filter(Device.device_id == target_device_id).first()
             if device:
                 device.last_seen = datetime.now().astimezone()
-                if message_data.get("counter") is not None:
-                    device.last_counter = message_data.get("counter")
+                if message_data.get("request_counter") is not None:
+                    device.last_request_counter = message_data.get("request_counter")
                 db.commit()
             
             # This is a RESPONSE from device (since device is sending it)
@@ -299,7 +299,7 @@ async def websocket_device_endpoint(
                 "device_id": target_device_id,
                 "payload": message_data.get("payload"),
                 "signature": message_data.get("signature"),
-                "counter": message_data.get("counter"),
+                "request_counter": message_data.get("request_counter"),
                 "version": "1.0"
             }
             

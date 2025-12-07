@@ -56,7 +56,7 @@ String PacketManager::createOuterPacket(const String& encryptedPayload) {
     doc["device_id"] = DEVICE_ID;
     doc["payload"] = encryptedPayload;
     doc["signature"] = crypto.calculateHMAC(encryptedPayload);
-    doc["counter"] = crypto.getRequestCount();
+    doc["request_counter"] = crypto.getRequestCount();
     doc["version"] = "1.0";
 
     String out;

@@ -115,12 +115,12 @@ class PacketManager:
         except json.JSONDecodeError as e:
             return {"status": "error", "error": f"INNER_JSON_ERROR: {e}"}
         
-        # Build successful response with counter from outer packet
+        # Build successful response with request_counter from outer packet
         result = {"status": "success"}
         
-        # Add counter from outer packet (synced from ESP)
-        if "counter" in outer:
-            result["counter"] = outer["counter"]
+        # Add request_counter from outer packet (synced from ESP)
+        if "request_counter" in outer:
+            result["request_counter"] = outer["request_counter"]
         
         result.update(inner)
         

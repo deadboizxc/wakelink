@@ -80,8 +80,8 @@ class TcpHandler(private val device: Device) {
     
     private fun buildResponseData(result: org.wakelink.android.protocol.CommandResponse): Map<String, Any?> {
         return buildMap {
-            // Counter from ESP (synced in outer packet)
-            result.counter?.let { put("counter", it) }
+            // Request counter from ESP (synced in outer packet)
+            result.requestCounter?.let { put("request_counter", it) }
             
             // Basic result fields
             result.result?.let { put("result", it) }
@@ -92,7 +92,7 @@ class TcpHandler(private val device: Device) {
             result.ip?.let { put("ip", it) }
             result.ssid?.let { put("ssid", it) }
             result.rssi?.let { put("rssi", it) }
-            result.requests?.let { put("requests", it) }
+            result.requestCounterInfo?.let { put("request_counter", it) }
             result.cryptoEnabled?.let { put("crypto_enabled", it) }
             result.mode?.let { put("mode", it) }
             result.webEnabled?.let { put("web_enabled", it) }
@@ -102,7 +102,7 @@ class TcpHandler(private val device: Device) {
             
             // Crypto info fields
             result.enabled?.let { put("enabled", it) }
-            result.limit?.let { put("limit", it) }
+            result.requestLimit?.let { put("request_limit", it) }
             result.keyInfo?.let { put("key_info", it) }
             
             // Token fields

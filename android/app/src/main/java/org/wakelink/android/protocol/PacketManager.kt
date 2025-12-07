@@ -113,9 +113,9 @@ class PacketManager(
                 return CommandResponse(status = "error", error = "DECRYPT_FAILED")
             }
             
-            // Parse inner response and add counter from outer packet
+            // Parse inner response and add request_counter from outer packet
             val innerResponse = json.decodeFromString<CommandResponse>(decrypted.getOrThrow())
-            innerResponse.copy(counter = outer.counter)
+            innerResponse.copy(requestCounter = outer.requestCounter)
         } catch (e: Exception) {
             CommandResponse(status = "error", error = e.message ?: "UNKNOWN_ERROR")
         }
@@ -135,7 +135,7 @@ data class OuterPacket(
     @SerialName("device_id") val deviceId: String = "",
     val payload: String = "",
     val signature: String = "",
-    val counter: Int? = null,
+    @SerialName("request_counter") val requestCounter: Int? = null,
     val version: String = "1.0"
 )
 
@@ -147,15 +147,15 @@ data class CommandResponse(
     val message: String? = null,
     val data: Map<String, String>? = null,
     
-    // Counter from outer packet (synced from ESP)
-    val counter: Int? = null,
+    // Request counter from outer packet (synced from ESP)
+    @SerialName("request_counter") val requestCounter: Int? = null,
     
     // Device info fields (from cmd_info)
     @SerialName("device_id") val deviceId: String? = null,
     val ip: String? = null,
     val ssid: String? = null,
     val rssi: Int? = null,
-    val requests: Int? = null,
+    @SerialName("request_counter") val requestCounterInfo: Int? = null,
     @SerialName("crypto_enabled") val cryptoEnabled: Boolean? = null,
     val mode: String? = null,
     @SerialName("web_enabled") val webEnabled: Boolean? = null,
@@ -165,7 +165,7 @@ data class CommandResponse(
     
     // Crypto info fields (from cmd_crypto_info)
     val enabled: Boolean? = null,
-    val limit: Int? = null,
+    @SerialName("request_limit") val requestLimit: Int? = null,
     @SerialName("key_info") val keyInfo: String? = null,
     
     // Token update fields

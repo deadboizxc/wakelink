@@ -147,7 +147,7 @@ void initWebServer() {
         html += String(ESP.getFreeHeap());
         html += F(" bytes</div></div>");
         html += F("<div class='status-item'><div class='status-label'>RSSI</div><div class='status-value'>");
-        html += inAPMode ? F("N/A") : String(WiFi.RSSI()) + F(" dBm");
+        html += inAPMode ? String(F("N/A")) : String(WiFi.RSSI()) + F(" dBm");
         html += F("</div></div></div>");
 
         html += F("<div class='links'><a href='/'>← Back to Setup</a></div>");

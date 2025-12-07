@@ -71,7 +71,7 @@
   "device_id": "WL35080814",
   "payload": "<hex-encoded encrypted data>",
   "signature": "<HMAC-SHA256 of payload only>",
-  "counter": 42,
+  "request_counter": 42,
   "version": "1.0"
 }
 ```

@@ -240,7 +240,7 @@ class CloudClient:
                                     "device_id": self.device_id,
                                     "payload": payload,
                                     "signature": signature,
-                                    "counter": msg.get("counter"),
+                                    "request_counter": msg.get("request_counter"),
                                     "version": msg.get("version", "1.0")
                                 }
                                 decrypted = self.packet_manager.process_incoming_packet(json.dumps(full_packet))
@@ -443,7 +443,7 @@ class CloudClient:
                             "device_id": self.device_id,
                             "payload": payload,
                             "signature": signature,
-                            "counter": msg.get("counter"),
+                            "request_counter": msg.get("request_counter"),
                             "version": msg.get("version", "1.0")
                         }
                         decrypted = self.packet_manager.process_incoming_packet(json.dumps(full_packet))
