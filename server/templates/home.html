@@ -3,47 +3,100 @@
 {% block title %}WakeLink Cloud Relay{% endblock %}
 
 {% block content %}
-<div class="box">
-    <h1>🌐 WakeLink Cloud Relay</h1>
-    <p><strong>Mode:</strong> Secure API with Bearer Tokens</p>
-    <p><strong>Port:</strong> 9009</p>
-    <p><strong>Database:</strong> {{ database_file }}</p>
-    <p><strong>URL:</strong> {{ base_url }}</p>
-    
-    <div class="token-info">
-        <strong>🔐 Secure Authentication:</strong> All API requests require Bearer token in Authorization header
+<div class="hero">
+    <div class="hero-badge">
+        <span>Protocol v1.0</span>
     </div>
-    
-    <div class="plan">
-        <h3>🚀 Free Base Plan</h3>
-        <p><strong>5 devices</strong> included</p>
-        <p>Upgrade available for more devices</p>
-    </div>
+    <span class="hero-icon">🔗</span>
+    <h1>Wake<span class="gradient-text">Link</span> Cloud</h1>
+    <p class="hero-subtitle">Secure ESP8266/ESP32 Remote Wake-on-LAN with end-to-end encryption. Control your devices from anywhere.</p>
     
     <div class="nav">
-        <a href="/login">🔑 Login</a>
-        <a href="/register">📝 Register</a>
+        <a href="/login"><span>🔑 Login</span></a>
+        <a href="/register"><span>📝 Register</span></a>
     </div>
+</div>
+
+<div class="stats-row">
+    <div class="stat-card">
+        <div class="stat-icon">🔒</div>
+        <div class="stat-value">E2E</div>
+        <div class="stat-label">Encrypted</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-value">&lt;50ms</div>
+        <div class="stat-label">Latency</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">🌐</div>
+        <div class="stat-value">WSS</div>
+        <div class="stat-label">Real-time</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">🛡️</div>
+        <div class="stat-value">ChaCha20</div>
+        <div class="stat-label">Cipher</div>
+    </div>
+</div>
+
+<div class="features-grid">
+    <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <div class="feature-title">ChaCha20 + HMAC-SHA256</div>
+        <div class="feature-desc">Military-grade encryption. Server never sees your data — true end-to-end security.</div>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-title">WebSocket Real-time</div>
+        <div class="feature-desc">Instant command delivery via persistent WSS connection. No polling delays.</div>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">📡</div>
+        <div class="feature-title">Wake-on-LAN</div>
+        <div class="feature-desc">Boot your PC remotely from anywhere in the world through your ESP device.</div>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">🆓</div>
+        <div class="feature-title">Free Tier</div>
+        <div class="feature-desc">5 devices included free. Perfect for home automation and personal projects.</div>
+    </div>
+</div>
+
+<div class="section">
+    <h3>📚 API Reference</h3>
     
-    <h3>API Endpoints:</h3>
-    <div class="endpoints">
-        <h4>For Devices (use device_token in request body):</h4>
-        <ul>
-            <li><strong>POST /api/push</strong> - sending messages</li>
-            <li><strong>POST /api/pull</strong> - receiving commands</li>
-        </ul>
+    <div class="api-section">
+        <h4>📱 Device Endpoints</h4>
+        <div class="endpoints">
+            <ul>
+                <li><strong>POST /api/push</strong> — Send encrypted command to device queue</li>
+                <li><strong>POST /api/pull</strong> — Receive responses (supports long-polling)</li>
+                <li><strong>WSS /ws/{device_id}</strong> — Real-time WebSocket connection</li>
+            </ul>
+        </div>
         
-        <h4>For Clients (use Bearer token in Authorization header):</h4>
-        <ul>
-            <li><strong>POST /api/register_device</strong> - device registration</li>
-            <li><strong>GET /api/devices</strong> - device list</li>
-            <li><strong>POST /api/delete_device</strong> - device deletion</li>
-        </ul>
+        <h4>🖥️ Client Endpoints</h4>
+        <div class="endpoints">
+            <ul>
+                <li><strong>POST /api/register_device</strong> — Register new device</li>
+                <li><strong>GET /api/devices</strong> — List your devices</li>
+                <li><strong>POST /api/delete_device</strong> — Remove device</li>
+            </ul>
+        </div>
         
-        <h4>Example with Bearer Token:</h4>
-        <pre style="background: #f8f9fa; padding: 10px; border-radius: 4px; font-size: 12px;">
-curl -X GET "{{ base_url }}/api/devices" \
-  -H "Authorization: Bearer your_api_token_here"</pre>
+        <h4>💻 Quick Start</h4>
+        <div class="token">curl -X GET "{{ base_url }}/api/devices" \
+  -H "Authorization: Bearer YOUR_API_TOKEN"</div>
+    </div>
+</div>
+
+<div class="section">
+    <h3>🌍 Server Info</h3>
+    <div class="stats">
+        <p><strong>Base URL:</strong> <code>{{ base_url }}</code></p>
+        <p><strong>WebSocket:</strong> <code>{{ base_url.replace('http', 'ws') }}/ws/{device_id}</code></p>
+        <p><strong>Protocol:</strong> WakeLink v1.0</p>
     </div>
 </div>
 {% endblock %}

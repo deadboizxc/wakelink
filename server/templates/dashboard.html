@@ -1,194 +1,172 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - WakeLink{% endblock %}
+{% block title %}Dashboard — WakeLink{% endblock %}
 
 {% block content %}
-<h1>🚀 WakeLink Dashboard</h1>
-<h2>Welcome, {{ user.username }}!</h2>
+<div class="dashboard-header">
+    <div>
+        <h1>🚀 Dashboard</h1>
+        <p class="welcome-text">Welcome back, <strong>{{ user.username }}</strong></p>
+    </div>
+    <div class="nav" style="margin: 0; animation: none;">
+        <a href="/"><span>🏠 Home</span></a>
+        <a href="/logout"><span>🚪 Logout</span></a>
+    </div>
+</div>
 
-<div class="nav">
-    <a href="/">🏠 Home</a>
-    <a href="/logout">🚪 Logout</a>
+<div class="stats-row">
+    <div class="stat-card">
+        <div class="stat-icon">📱</div>
+        <div class="stat-value" data-count="{{ user.devices_count }}">{{ user.devices_count }}</div>
+        <div class="stat-label">/ {{ user.devices_limit }} Devices</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">🟢</div>
+        <div class="stat-value" data-count="{{ online_count }}">{{ online_count }}</div>
+        <div class="stat-label">Online Now</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">⭐</div>
+        <div class="stat-value">{{ user.plan }}</div>
+        <div class="stat-label">Plan</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-value" data-count="{{ system_stats.wss_connections }}">{{ system_stats.wss_connections }}</div>
+        <div class="stat-label">WSS Active</div>
+    </div>
 </div>
 
 <div class="section">
-    <h3>📊 Account Information</h3>
-    <div class="plan-info">
-        <h4>📋 Your Plan: {{ user.plan }}</h4>
-        <p><strong>Devices:</strong> {{ user.devices_count }} / {{ user.devices_limit }}</p>
-        <p><strong>Online Devices:</strong> {{ online_count }}</p>
+    <h3>🔑 API Token</h3>
+    <div class="token-display">
+        <div class="token-label">Use this token to authenticate API requests</div>
+        <div class="token-value" id="api-token">{{ api_token }}</div>
+        <button class="copy-btn" style="margin-top: 12px;" data-copy="{{ api_token }}">📋 Copy Token</button>
     </div>
-    
-    <div class="api-section">
-        <h4>🔑 Your API Token 
-            <button class="copy-btn" onclick="copyToClipboard('{{ api_token }}')">Copy</button>
-        </h4>
-        <p>Use this token to access the WakeLink API:</p>
-        <div class="token" id="api-token">{{ api_token }}</div>
-        <p><small><em>Keep this token secure! It provides full access to your account.</em></small></p>
-    </div>
+    <p><small><em>⚠️ Keep this token secure — it provides full access to your account</em></small></p>
 </div>
 
 <div class="section">
     <h3>📱 Your Devices</h3>
     {% if not user.devices %}
-        <p>No devices registered yet. Use the API to add your first device!</p>
+        <div class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <p>No devices registered yet</p>
+            <p><small>Use the API or CLI to register your first device</small></p>
+        </div>
     {% else %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Device ID</th>
-                    <th>Status</th>
-                    <th>Last Seen</th>
-                    <th>Poll Count</th>
-                    <th>Registered</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for device in user.devices %}
-                <tr>
-                    <td>{{ device.device_id }}</td>
-                    <td>
-                        {% if device.online %}
-                            <span class="status-online">🟢 Online</span>
-                        {% else %}
-                            <span class="status-offline">🔴 Offline</span>
-                        {% endif %}
-                    </td>
-                    <td>{{ device.last_seen.strftime('%Y-%m-%d %H:%M:%S') if device.last_seen else 'Never' }}</td>
-                    <td>{{ device.poll_count }}</td>
-                    <td>{{ device.added.strftime('%Y-%m-%d %H:%M:%S') if device.added else 'N/A' }}</td>
-                    <td>
-                        <button class="delete-btn" onclick="deleteDevice('{{ device.device_id }}')">Delete</button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Device ID</th>
+                        <th>Status</th>
+                        <th>Last Seen</th>
+                        <th>Poll Count</th>
+                        <th>Registered</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for device in user.devices %}
+                    <tr>
+                        <td><strong>{{ device.device_id }}</strong></td>
+                        <td>
+                            {% if device.online %}
+                                <span class="status status-online"><span class="status-dot"></span> Online</span>
+                            {% else %}
+                                <span class="status status-offline"><span class="status-dot"></span> Offline</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ device.last_seen.strftime('%Y-%m-%d %H:%M') if device.last_seen else '—' }}</td>
+                        <td>{{ device.poll_count }}</td>
+                        <td>{{ device.added.strftime('%Y-%m-%d') if device.added else '—' }}</td>
+                        <td>
+                            <button class="delete-btn" onclick="deleteDevice('{{ device.device_id }}')">🗑️ Delete</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% endif %}
 </div>
 
 <div class="section">
-    <h3>🔧 API Reference</h3>
+    <h3>🔧 Quick API Reference</h3>
     <div class="api-section">
-        <h4>Register a new device:</h4>
-        <div class="token" id="register-cmd">
-curl -X POST "{{ base_url }}/api/register_device" \<br>
-  -H "Content-Type: application/json" \<br>
-  -H "Authorization: Bearer {{ api_token }}" \<br>
-  -d '{"device_id": "my_esp32", "device_data": {"model": "ESP32", "version": "1.0"}}'
-        </div>
-        <button class="copy-btn" onclick="copyToClipboard('register-cmd')">Copy Command</button>
+        <h4>Register Device</h4>
+        <div class="token" id="register-cmd">curl -X POST "{{ base_url }}/api/register_device" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer {{ api_token }}" \
+  -d '{"device_id": "my_esp32"}'</div>
+        <button class="copy-btn" data-copy='curl -X POST "{{ base_url }}/api/register_device" -H "Content-Type: application/json" -H "Authorization: Bearer {{ api_token }}" -d '\''{"device_id": "my_esp32"}'\'''>📋 Copy</button>
 
-        <h4>Send message to device:</h4>
-        <div class="token" id="push-cmd">
-curl -X POST "{{ base_url }}/api/push" \<br>
-  -H "Content-Type: application/json" \<br>
-  -H "Authorization: Bearer {{ api_token }}" \<br>
-  -d '{<br>
-    "device_id": "DEVICE_ID_HERE",<br>
-    "payload": "your_encrypted_data_here",<br>
-    "signature": "hmac_signature_here",<br>
-    "version": "1.0"<br>
-  }'
-        </div>
-        <button class="copy-btn" onclick="copyToClipboard('push-cmd')">Copy Command</button>
+        <h4>List Devices</h4>
+        <div class="token" id="devices-cmd">curl -X GET "{{ base_url }}/api/devices" \
+  -H "Authorization: Bearer {{ api_token }}"</div>
+        <button class="copy-btn" data-copy='curl -X GET "{{ base_url }}/api/devices" -H "Authorization: Bearer {{ api_token }}"'>📋 Copy</button>
 
-        <h4>Get messages from device (device polling):</h4>
-<div class="token" id="pull-cmd">
-curl -X POST "{{ base_url }}/api/pull" \<br>
-  -H "Content-Type: application/json" \<br>
-  -H "Authorization: Bearer {{ api_token }}" \<br>
-  -d '{<br>
-    "device_id": "DEVICE_ID_HERE"<br>
-  }'
-</div>
-<button class="copy-btn" onclick="copyToClipboard('pull-cmd')">Copy Command</button>
-
-        <h4>Get your devices list:</h4>
-        <div class="token" id="devices-cmd">
-curl -X GET "{{ base_url }}/api/devices" \<br>
-  -H "Authorization: Bearer {{ api_token }}"
-        </div>
-        <button class="copy-btn" onclick="copyToClipboard('devices-cmd')">Copy Command</button>
-
-        <h4>Delete device:</h4>
-        <div class="token" id="delete-cmd">
-curl -X POST "{{ base_url }}/api/delete_device" \<br>
-  -H "Content-Type: application/json" \<br>
-  -H "Authorization: Bearer {{ api_token }}" \<br>
-  -d '{"device_id": "DEVICE_ID_HERE"}'
-        </div>
-        <button class="copy-btn" onclick="copyToClipboard('delete-cmd')">Copy Command</button>
+        <h4>Delete Device</h4>
+        <div class="token" id="delete-cmd">curl -X POST "{{ base_url }}/api/delete_device" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer {{ api_token }}" \
+  -d '{"device_id": "DEVICE_ID"}'</div>
+        <button class="copy-btn" data-copy='curl -X POST "{{ base_url }}/api/delete_device" -H "Content-Type: application/json" -H "Authorization: Bearer {{ api_token }}" -d '\''{"device_id": "DEVICE_ID"}'\'''>📋 Copy</button>
     </div>
 </div>
 
 <div class="section">
     <h3>📊 System Status</h3>
-    <div class="stats">
-        <p><strong>Server Time:</strong> {{ server_time }}</p>
-        <p><strong>Online Devices:</strong> {{ system_stats.online_devices }} ({{ system_stats.wss_connections }} via WSS)</p>
-        <p><strong>Total Devices:</strong> {{ system_stats.total_devices }}</p>
-        <p><strong>Total Users:</strong> {{ system_stats.total_users }}</p>
-        <p><strong>Queues to Devices:</strong> {{ system_stats.queues_to_device }}</p>
-        <p><strong>Queues to Clients:</strong> {{ system_stats.queues_to_client }}</p>
+    <div class="stats-row" style="margin: 0;">
+        <div class="stat-card">
+            <div class="stat-value" data-count="{{ system_stats.online_devices }}">{{ system_stats.online_devices }}</div>
+            <div class="stat-label">Online Devices</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" data-count="{{ system_stats.wss_connections }}">{{ system_stats.wss_connections }}</div>
+            <div class="stat-label">WSS Connections</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" data-count="{{ system_stats.total_devices }}">{{ system_stats.total_devices }}</div>
+            <div class="stat-label">Total Devices</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" data-count="{{ system_stats.total_users }}">{{ system_stats.total_users }}</div>
+            <div class="stat-label">Total Users</div>
+        </div>
     </div>
+    <p style="text-align: center; margin-top: 16px;"><small>Server Time: {{ server_time }}</small></p>
 </div>
+{% endblock %}
 
+{% block scripts %}
 <script>
-    function copyToClipboard(elementId) {
-        let text;
-        if (typeof elementId === 'string') {
-            const element = document.getElementById(elementId);
-            if (element) {
-                text = element.textContent || element.innerText;
-            } else {
-                text = elementId;
-            }
-        } else {
-            text = elementId;
-        }
-        
-        text = text.replace(/<br\s*\/?>/gi, '\n');
-        
-        navigator.clipboard.writeText(text).then(function() {
-            alert('Copied to clipboard!');
-        }, function(err) {
-            console.error('Could not copy text: ', err);
-        });
-    }
-
     async function deleteDevice(deviceId) {
-        if (!confirm(`Are you sure you want to delete device "${deviceId}"?`)) {
-            return;
-        }
+        if (!confirm(`Delete device "${deviceId}"?`)) return;
 
         try {
             const response = await fetch('/dashboard/delete_device', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ device_id: deviceId }),
                 credentials: 'include'
             });
 
             if (response.ok) {
-                alert('Device deleted successfully!');
-                location.reload();
+                WakeLink.showToast('Device deleted successfully', 'success');
+                setTimeout(() => location.reload(), 1000);
             } else {
                 const error = await response.json();
-                alert('Error deleting device: ' + (error.detail || 'Unknown error'));
+                WakeLink.showToast('Error: ' + (error.detail || 'Unknown error'), 'error');
             }
         } catch (error) {
-            alert('Error deleting device: ' + error.message);
+            WakeLink.showToast('Error: ' + error.message, 'error');
         }
     }
 
-    // Auto-refresh page every 30 seconds to update device status
-    setTimeout(() => {
-        location.reload();
-    }, 30000);
+    // Auto-refresh every 30s
+    setTimeout(() => location.reload(), 30000);
 </script>
 {% endblock %}
