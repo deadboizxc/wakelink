@@ -149,6 +149,7 @@ void CommandManager::cmd_web_control(JsonDocument& doc, JsonObject data) {
     if (strcmp(action, "status") == 0) {
         doc["status"] = "success";
         doc["web_enabled"] = (bool)webServerEnabled;
+        doc["mode"] = inAPMode ? "AP" : "STA";
 
     } else if (strcmp(action, "enable") == 0) {
         webServerEnabled = true;
@@ -158,6 +159,13 @@ void CommandManager::cmd_web_control(JsonDocument& doc, JsonObject data) {
         doc["result"] = "web_enabled";
 
     } else if (strcmp(action, "disable") == 0) {
+        // Prevent disabling web server in AP mode - it's the only way to configure the device
+        if (inAPMode) {
+            doc["status"] = "error";
+            doc["error"] = "CANNOT_DISABLE_IN_AP_MODE";
+            doc["message"] = "Web server cannot be disabled in Access Point mode";
+            return;
+        }
         webServerEnabled = false;
         cfg.web_server_enabled = 0;
         saveConfig();
